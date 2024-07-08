@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class LibraryApp {
-    private static BookDAO bookDAO = new BookDAO();
     private static Scanner scanner = new Scanner(System.in);
+    private static BookDAO bookDAO = new BookDAO();
 
     public static void main(String[] args) {
         while (true) {
+            System.out.println("Library Management System");
             System.out.println("1. Add Book");
             System.out.println("2. View Books");
             System.out.println("3. Update Book");
@@ -37,10 +38,11 @@ public class LibraryApp {
                     searchBooks();
                     break;
                 case 6:
+                    System.out.println("Exiting...");
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
     }
@@ -58,8 +60,9 @@ public class LibraryApp {
         int yearPublished = scanner.nextInt();
         scanner.nextLine(); // consume newline
 
+        Book book = new Book(0, title, author, isbn, publisher, yearPublished); // id will be auto-incremented
         try {
-            bookDAO.addBook(title, author, isbn, publisher, yearPublished);
+            bookDAO.addBook(book);
             System.out.println("Book added successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,8 +96,9 @@ public class LibraryApp {
         int yearPublished = scanner.nextInt();
         scanner.nextLine(); // consume newline
 
+        Book book = new Book(id, title, author, isbn, publisher, yearPublished);
         try {
-            bookDAO.updateBook(id, title, author, isbn, publisher, yearPublished);
+            bookDAO.updateBook(book);
             System.out.println("Book updated successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,4 +132,3 @@ public class LibraryApp {
         }
     }
 }
-
