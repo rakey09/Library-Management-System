@@ -1,5 +1,3 @@
-package test;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -7,128 +5,38 @@ import java.util.Scanner;
 public class LibraryApp {
     private static Scanner scanner = new Scanner(System.in);
     private static BookDAO bookDAO = new BookDAO();
+    private static UserDAO userDAO = new UserDAO();
+    private static User loggedInUser = null;
 
     public static void main(String[] args) {
         while (true) {
-            System.out.println("Library Management System");
-            System.out.println("1. Add Book");
-            System.out.println("2. View Books");
-            System.out.println("3. Update Book");
-            System.out.println("4. Delete Book");
-            System.out.println("5. Search Books");
-            System.out.println("6. Exit");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-
-            switch (choice) {
-                case 1:
-                    addBook();
-                    break;
-                case 2:
-                    viewBooks();
-                    break;
-                case 3:
-                    updateBook();
-                    break;
-                case 4:
-                    deleteBook();
-                    break;
-                case 5:
-                    searchBooks();
-                    break;
-                case 6:
-                    System.out.println("Exiting...");
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+            if (loggedInUser == null) {
+                login();
+            } else {
+                showMenu();
             }
         }
     }
 
-    private static void addBook() {
-        System.out.print("Enter title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter author: ");
-        String author = scanner.nextLine();
-        System.out.print("Enter ISBN: ");
-        String isbn = scanner.nextLine();
-        System.out.print("Enter publisher: ");
-        String publisher = scanner.nextLine();
-        System.out.print("Enter year published: ");
-        int yearPublished = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+    private static void login() {
+        System.out.println("Library Management System - Login");
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
 
-        Book book = new Book(0, title, author, isbn, publisher, yearPublished); // id will be auto-incremented
         try {
-            bookDAO.addBook(book);
-            System.out.println("Book added successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void viewBooks() {
-        try {
-            List<Book> books = bookDAO.getAllBooks();
-            for (Book book : books) {
-                System.out.println(book);
+            loggedInUser = userDAO.authenticateUser(username, password);
+            if (loggedInUser != null) {
+                System.out.println("Login successful. Welcome, " + loggedInUser.getUsername());
+            } else {
+                System.out.println("Invalid credentials. Please try again.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static void updateBook() {
-        System.out.print("Enter book ID to update: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // consume newline
-        System.out.print("Enter new title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter new author: ");
-        String author = scanner.nextLine();
-        System.out.print("Enter new ISBN: ");
-        String isbn = scanner.nextLine();
-        System.out.print("Enter new publisher: ");
-        String publisher = scanner.nextLine();
-        System.out.print("Enter new year published: ");
-        int yearPublished = scanner.nextInt();
-        scanner.nextLine(); // consume newline
-
-        Book book = new Book(id, title, author, isbn, publisher, yearPublished);
-        try {
-            bookDAO.updateBook(book);
-            System.out.println("Book updated successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void deleteBook() {
-        System.out.print("Enter book ID to delete: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // consume newline
-
-        try {
-            bookDAO.deleteBook(id);
-            System.out.println("Book deleted successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void searchBooks() {
-        System.out.print("Enter search keyword: ");
-        String keyword = scanner.nextLine();
-
-        try {
-            List<Book> books = bookDAO.searchBooks(keyword);
-            for (Book book : books) {
-                System.out.println(book);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
+    private static void showMenu() {
+        System.out.println("Library Management System");
+       
